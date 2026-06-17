@@ -21,6 +21,34 @@ def dashboard(request):
 
             resume_text = extract_text(resume_file)
 
+            resume_keywords = [
+                "education",
+                "experience",
+                "skills",
+                "projects",
+                "certifications",
+                "summary"
+            ]
+
+            matches = sum(
+                1 for keyword in resume_keywords
+                if keyword in resume_text.lower()
+            )
+
+            if matches < 2:
+                form.add_error(
+                    'resume',
+                    'This does not appear to be a valid resume PDF.'
+                )
+
+                return render(
+                    request,
+                    'analyzer/dashboard.html',
+                    {
+                        'form': form
+                    }
+                )
+
             result = analyze_resume(
                 resume_text,
                 target_role
@@ -48,7 +76,6 @@ def dashboard(request):
             'form': form
         }
     )
-
 
 @login_required
 def result(request, pk):

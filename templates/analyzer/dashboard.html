@@ -28,6 +28,12 @@
 
                     {{ form.resume }}
 
+                    {% if form.resume.errors %}
+                        <div class="text-danger mt-2">
+                            {{ form.resume.errors }}
+                        </div>
+                    {% endif %}
+
                     <div class="form-text text-secondary mt-2">
                         Supported formats: PDF, DOCX
                     </div>
@@ -41,6 +47,12 @@
                     </label>
 
                     {{ form.target_role }}
+
+                    {% if form.target_role.errors %}
+                        <div class="text-danger mt-2">
+                            {{ form.target_role.errors }}
+                        </div>
+                    {% endif %}
 
                 </div>
 
