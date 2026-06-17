@@ -49,10 +49,25 @@ def dashboard(request):
                     }
                 )
 
-            result = analyze_resume(
-                resume_text,
-                target_role
-            )
+            try:
+                result = analyze_resume(
+                    resume_text,
+                    target_role
+                )
+
+            except Exception:
+                form.add_error(
+                    None,
+                    'AI analysis is temporarily unavailable. Please try again later.'
+                )
+
+                return render(
+                    request,
+                    'analyzer/dashboard.html',
+                    {
+                        'form': form
+                    }
+                )
 
             analysis = ResumeAnalysis.objects.create(
                 user=request.user,
@@ -76,6 +91,7 @@ def dashboard(request):
             'form': form
         }
     )
+
 
 @login_required
 def result(request, pk):
@@ -129,6 +145,7 @@ def download_report(request, pk):
     )
 
     return response
+
 
 def home(request):
     if request.user.is_authenticated:
