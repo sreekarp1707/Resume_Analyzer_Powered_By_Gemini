@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="glass-card p-5">
+
+            <div class="text-center mb-5">
+                <h1 class="mb-3">🚀 Analyze Your Resume</h1>
+
+                <p class="text-secondary">
+                    Upload your resume and get an ATS score, keyword analysis, and AI suggestions.
+                </p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold mb-2">
+                        {{ form.resume.label }}
+                    </label>
+
+                    {{ form.resume }}
+
+                    <div class="form-text text-secondary mt-2">
+                        Supported formats: PDF, DOCX
+                    </div>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold mb-2">
+                        {{ form.target_role.label }}
+                    </label>
+
+                    {{ form.target_role }}
+
+                </div>
+
+                <div class="d-grid">
+
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Analyze Resume
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

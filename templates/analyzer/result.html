@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+
+        <div class="glass-card p-4 text-center h-100">
+
+            <h4 class="mb-4">ATS Score</h4>
+
+            <div class="mx-auto" style="max-width: 260px;">
+                <canvas id="scoreChart"></canvas>
+            </div>
+
+            <div class="display-4 fw-bold text-info mt-4">
+                {{ analysis.ats_score }}%
+            </div>
+
+            {% if analysis.ats_score >= 80 %}
+                <span class="badge bg-success fs-6 px-3 py-2 mt-2">
+                    Excellent Match
+                </span>
+
+            {% elif analysis.ats_score >= 60 %}
+                <span class="badge bg-warning text-dark fs-6 px-3 py-2 mt-2">
+                    Good Match
+                </span>
+
+            {% else %}
+                <span class="badge bg-danger fs-6 px-3 py-2 mt-2">
+                    Needs Improvement
+                </span>
+            {% endif %}
+
+            <hr class="border-secondary my-4">
+
+            <p class="mb-1 text-secondary">Target Role</p>
+
+            <h5>{{ analysis.target_role }}</h5>
+
+            <div class="d-grid mt-4">
+                <a href="{% url 'download_report' analysis.pk %}"
+                   class="btn btn-primary">
+                    📄 Download PDF Report
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-8">
+
+        <div class="glass-card p-4 mb-4">
+
+            <h4 class="mb-4">📊 Keyword Analysis</h4>
+
+            <canvas id="keywordChart"></canvas>
+
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+
+            <h4 class="mb-4">✅ Matched Keywords</h4>
+
+            {% for keyword in analysis.matched_keywords %}
+                <span class="badge-keyword matched">
+                    {{ keyword }}
+                </span>
+            {% empty %}
+                <p class="text-secondary">No matched keywords found.</p>
+            {% endfor %}
+
+        </div>
+
+        <div class="glass-card p-4">
+
+            <h4 class="mb-4">❌ Missing Keywords</h4>
+
+            {% for keyword in analysis.missing_keywords %}
+                <span class="badge-keyword missing">
+                    {{ keyword }}
+                </span>
+            {% empty %}
+                <p class="text-secondary">No missing keywords found.</p>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="glass-card p-4 mt-4">
+
+    <h4 class="mb-4">💡 AI Suggestions</h4>
+
+    <div style="white-space: pre-line;">
+        {{ analysis.suggestions }}
+    </div>
+
+</div>
+
+<div class="text-center mt-4">
+
+    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg me-2">
+        Analyze Another Resume
+    </a>
+
+    <a href="{% url 'history' %}" class="btn btn-outline-light btn-lg">
+        View History
+    </a>
+
+</div>
+
+<script>
+    const atsScore = {{ analysis.ats_score }};
+    const remainingScore = 100 - atsScore;
+
+    new Chart(document.getElementById('scoreChart'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [atsScore, remainingScore],
+                backgroundColor: [
+                    '#3b82f6',
+                    'rgba(255,255,255,0.08)'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            cutout: '78%',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('keywordChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Matched', 'Missing'],
+            datasets: [{
+                data: [
+                    {{ analysis.matched_keywords|length }},
+                    {{ analysis.missing_keywords|length }}
+                ],
+                backgroundColor: [
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(239, 68, 68, 0.8)'
+                ],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#ffffff'
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.08)'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#ffffff'
+                    },
+                    grid: {
+                        color: 'rgba(255,255,255,0.08)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
